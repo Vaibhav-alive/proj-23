@@ -7,41 +7,43 @@ const PROFILES = [
     id: 'pfp-1',
     code: 'PF-1',
     codeLabel: 'NM-1',
-    name: 'dummy-desc',
-    subtitle: 'dummy-desc',
+    name: '',
+    subtitle: '',
     image: '',
   },
   {
     id: 'pfp-2',
     code: 'PF-2',
     codeLabel: 'NM-2',
-    name: 'dummy-desc',
-    subtitle: 'dummy-desc',
+    name: '',
+    subtitle: '',
     image: '',
   },
   {
     id: 'pfp-3',
     code: 'PF-3',
     codeLabel: 'NM-3',
-    name: 'dummy-desc',
-    subtitle: 'dummy-desc',
+    name: '',
+    subtitle: '',
     image: '',
   },
   {
     id: 'pfp-4',
     code: 'PF-4',
     codeLabel: 'NM-4',
-    name: 'dummy-desc',
-    subtitle: 'dummy-desc',
+    name: '',
+    subtitle: '',
     image: '',
   },
 ];
 
-export const PROFILE_PRELOAD_ASSETS = PROFILES.map(({ image, name }) => ({
-  src: image,
-  type: 'image',
-  label: name.trim() || 'profile photo',
-}));
+export const PROFILE_PRELOAD_ASSETS = PROFILES
+  .filter(({ image }) => image.trim())
+  .map(({ image, name }) => ({
+    src: image,
+    type: 'image',
+    label: name.trim() || 'profile photo',
+  }));
 
 function playSoftChime() {
   try {
@@ -145,12 +147,14 @@ export default function ProfileSelector({ onSelect }) {
               >
                 {/* Rounded square card matching design.png & frame1-2.mp4 */}
                 <div className="profile-avatar-box">
-                  <img
-                    src={profile.image}
-                    alt={profile.name}
-                    className="profile-photo"
-                    loading="eager"
-                  />
+                  {profile.image.trim() && (
+                    <img
+                      src={profile.image}
+                      alt={profile.name}
+                      className="profile-photo"
+                      loading="eager"
+                    />
+                  )}
                  
                 </div>
 
