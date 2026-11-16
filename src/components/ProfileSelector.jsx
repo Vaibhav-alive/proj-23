@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import './ProfileSelector.css';
-import dummyImage from '../assets/dummy-placeholder.svg';
+// import dummyImage from '../assets/dummy-placeholder.svg';
 
 const PROFILES = [
   {
@@ -9,7 +9,7 @@ const PROFILES = [
     codeLabel: 'NM-1',
     name: 'dummy-desc',
     subtitle: 'dummy-desc',
-    image: dummyImage,
+    image: '',
   },
   {
     id: 'pfp-2',
@@ -17,7 +17,7 @@ const PROFILES = [
     codeLabel: 'NM-2',
     name: 'dummy-desc',
     subtitle: 'dummy-desc',
-    image: dummyImage,
+    image: '',
   },
   {
     id: 'pfp-3',
@@ -33,7 +33,7 @@ const PROFILES = [
     codeLabel: 'NM-4',
     name: 'dummy-desc',
     subtitle: 'dummy-desc',
-    image: dummyImage,
+    image: '',
   },
 ];
 
