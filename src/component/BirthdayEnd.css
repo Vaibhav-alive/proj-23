@@ -1,0 +1,357 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800&display=swap");
+
+.bh {
+  --tile: clamp(76px, 11vw, 150px);
+  --pad-x: clamp(20px, 3.4vw, 48px);
+  --pad-y: clamp(18px, 3vh, 36px);
+  --fit: 1;
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding:
+    calc(var(--pad-y) + env(safe-area-inset-top, 0px))
+    calc(var(--pad-x) + env(safe-area-inset-right, 0px))
+    calc(var(--pad-y) + env(safe-area-inset-bottom, 0px))
+    calc(var(--pad-x) + env(safe-area-inset-left, 0px));
+  background: #eceeef;
+  color: #17110f;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+.bh *, .bh *::before, .bh *::after { box-sizing: border-box; }
+
+/* ---------- BACKGROUND (every moving layer is transform/opacity only) ---------- */
+
+.bh-tiles,
+.bh-lines,
+.bh-grain,
+.bh-sweep { position: absolute; pointer-events: none; }
+
+.bh-tiles {
+  inset: 0;
+  z-index: -6;
+  background:
+    radial-gradient(120% 90% at 50% 45%, #fff 0%, #f3f4f5 45%, #dcdfe1 100%);
+}
+
+/* silver grout lines */
+.bh-lines {
+  inset: 0;
+  z-index: -5;
+  background-image:
+    linear-gradient(to right, rgba(255,255,255,.95) 0 1px, rgba(118,124,132,.36) 1px 2px, transparent 2px 4px),
+    linear-gradient(to bottom, rgba(255,255,255,.95) 0 1px, rgba(118,124,132,.36) 1px 2px, transparent 2px 4px);
+  background-size: var(--tile) var(--tile);
+  background-position: calc(50% + var(--tile) / 2) calc(40% + var(--tile) / 2);
+}
+
+/* icy-blue grid revealed only under the moving light */
+.bh-spot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -4;
+  width: clamp(320px, 58vmax, 820px);
+  aspect-ratio: 1;
+  overflow: hidden;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: bh-breathe 4.5s ease-in-out infinite;
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0,0,0,.5) 45%, transparent 100%);
+          mask-image: radial-gradient(circle closest-side, #000 0%, rgba(0,0,0,.5) 45%, transparent 100%);
+}
+.bh-lines--glow {
+  inset: auto;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  will-change: transform;
+  background-image:
+    linear-gradient(to right, transparent 0 .5px, rgba(176,183,194,.9) .5px 1.1px, #fff 1.1px 1.9px, rgba(196,202,211,.85) 1.9px 2.5px, transparent 2.5px 4px),
+    linear-gradient(to bottom, transparent 0 .5px, rgba(176,183,194,.9) .5px 1.1px, #fff 1.1px 1.9px, rgba(196,202,211,.85) 1.9px 2.5px, transparent 2.5px 4px);
+}
+
+/* bright halo (plain radial gradient, moved with transform) */
+.bh-halo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -3;
+  width: clamp(420px, 80vmax, 1100px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  will-change: transform, opacity;
+  animation: bh-breathe 6s ease-in-out -2s infinite;
+  background: radial-gradient(circle closest-side, rgba(255,255,255,.96), rgba(244,246,249,.62) 40%, rgba(255,255,255,0) 100%);
+}
+
+/* slow drifting ambient light */
+.bh-orb {
+  position: absolute;
+  z-index: -3;
+  width: 62vmax;
+  aspect-ratio: 1;
+  pointer-events: none;
+  will-change: transform;
+}
+.bh-orb--a { top: -22vmax; left: -14vmax; background: radial-gradient(circle closest-side, rgba(214,219,227,.6), transparent); animation: bh-drift-a 22s ease-in-out infinite alternate; }
+.bh-orb--b { bottom: -26vmax; right: -16vmax; background: radial-gradient(circle closest-side, rgba(255,255,255,.95), transparent); animation: bh-drift-b 26s ease-in-out infinite alternate; }
+.bh-orb--c { top: 18%; right: 8%; width: 44vmax; background: radial-gradient(circle closest-side, rgba(238,234,228,.55), transparent); animation: bh-drift-c 30s ease-in-out infinite alternate; }
+
+/* light pulses travelling along the grout lines */
+.bh-beam {
+  position: absolute;
+  z-index: -2;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: 8s linear infinite;
+}
+.bh-beam--x {
+  left: 0;
+  width: var(--len);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(160,167,178,.55) 35%, rgba(222,226,232,.95) 70%, #fff 92%, transparent);
+  box-shadow: 0 0 10px 1px rgba(255,255,255,.95), 0 0 26px 4px rgba(176,184,196,.5);
+  animation-name: bh-beam-x;
+}
+.bh-beam--y {
+  top: 0;
+  height: var(--len);
+  width: 2px;
+  background: linear-gradient(180deg, transparent, rgba(160,167,178,.55) 35%, rgba(222,226,232,.95) 70%, #fff 92%, transparent);
+  box-shadow: 0 0 10px 1px rgba(255,255,255,.95), 0 0 26px 4px rgba(176,184,196,.5);
+  animation-name: bh-beam-y;
+}
+.bh-beam--x.is-rev { animation-direction: reverse; }
+.bh-beam--y.is-rev { animation-direction: reverse; }
+
+/* sparkles on grid crossings */
+.bh-dot {
+  position: absolute;
+  z-index: -2;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform, opacity;
+  background: radial-gradient(circle, #fff 0 20%, rgba(214,219,227,.95) 38%, rgba(170,178,190,.35) 55%, transparent 74%);
+  animation: bh-twinkle 4s ease-in-out infinite;
+}
+
+/* soft light streak gliding over the tiles */
+.bh-sweep {
+  top: 0;
+  bottom: 0;
+  left: -45%;
+  width: 45%;
+  z-index: -2;
+  opacity: .7;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.85) 48%, rgba(222,226,232,.5) 56%, transparent);
+  will-change: transform;
+  animation: bh-sweep 8s cubic-bezier(.4, 0, .2, 1) 1.2s infinite;
+}
+
+.bh-grain {
+  inset: 0;
+  z-index: -1;
+  opacity: .05;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+
+/* ---------- HEADER ---------- */
+
+.bh-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-width: 0;
+  animation: bh-fade .8s .1s both;
+}
+.bh-brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.bh-logo {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #1c120f;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.bh-brand-name {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  white-space: nowrap;
+}
+.bh-tagline {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: .02em;
+  text-align: right;
+  text-wrap: balance;
+}
+
+/* ---------- HEADLINE ---------- */
+
+.bh-center {
+  display: grid;
+  place-items: center;
+  min-height: 0;
+  padding: clamp(16px, 4vh, 48px) 0;
+}
+
+.bh-title {
+  --fs: min(11.4vw, 17svh, 168px);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: var(--fs);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-align: center;
+  user-select: none;
+}
+.bh-line {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  animation: bh-float 7s ease-in-out infinite;
+}
+.bh-line:nth-child(2) { animation-delay: -1.2s; }
+.bh-line:nth-child(3) { animation-delay: -2.4s; }
+.bh-line--name { font-size: calc(1em * var(--fit)); }
+
+/* per-line greyscale like the reference */
+.bh-line:nth-child(1) .bh-letter { --a: #6c6c6e; --b: #7e7e80; }
+.bh-line:nth-child(2) .bh-letter { --a: #7b7b7d; --b: #9b9b9d; }
+.bh-line:nth-child(3) .bh-letter { --a: #949496; --b: #bababc; }
+
+.bh-letter {
+  display: inline-block;
+  /* padding stops the gradient clip from cutting braces / glyph edges */
+  padding: .03em .02em .06em;
+  margin: -.03em -.02em -.06em;
+  background: linear-gradient(180deg, var(--a), var(--b));
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  opacity: 0;
+  transform: translate3d(0, 36%, 0) scale(.96);
+  will-change: transform, opacity;
+  animation: bh-rise .9s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 50ms + 200ms) forwards;
+}
+
+/* ---------- BUTTON ---------- */
+
+.bh-foot {
+  display: flex;
+  justify-content: center;
+  animation: bh-fade .8s 1.4s both;
+}
+.bh-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 6px 24px 6px 7px;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font: inherit;
+  background: linear-gradient(180deg, #c9cbce, #a9acb1);
+  box-shadow:
+    0 14px 28px -10px rgba(40,44,52,.4),
+    inset 0 1px 0 rgba(255,255,255,.75);
+  transition: transform .3s cubic-bezier(.2,.8,.2,1), box-shadow .3s;
+  -webkit-tap-highlight-color: transparent;
+}
+.bh-btn:hover { transform: translateY(-2px); box-shadow: 0 18px 32px -10px rgba(40,44,52,.5), inset 0 1px 0 rgba(255,255,255,.85); }
+.bh-btn:active { transform: scale(.97); }
+.bh-btn:focus-visible { outline: 2px solid #17110f; outline-offset: 4px; }
+.bh-btn-icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #000;
+  color: #fff;
+  transition: transform .45s cubic-bezier(.2,.8,.2,1);
+}
+.bh-btn:hover .bh-btn-icon { transform: rotate(-360deg); }
+.bh-btn-text {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: #fff;
+  white-space: nowrap;
+}
+
+/* ---------- KEYFRAMES (transform + opacity only) ---------- */
+
+@keyframes bh-breathe { 0%,100% { opacity: .78; } 50% { opacity: 1; } }
+@keyframes bh-twinkle { 0%,100% { opacity: 0; transform: scale(.3); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes bh-beam-x {
+  0% { opacity: 0; transform: translate3d(-100%,0,0); }
+  8%, 52% { opacity: 1; }
+  62%, 100% { opacity: 0; transform: translate3d(100vw,0,0); }
+}
+@keyframes bh-beam-y {
+  0% { opacity: 0; transform: translate3d(0,-100%,0); }
+  8%, 52% { opacity: 1; }
+  62%, 100% { opacity: 0; transform: translate3d(0,120svh,0); }
+}
+@keyframes bh-drift-a { to { transform: translate3d(18vmax, 12vmax, 0) scale(1.15); } }
+@keyframes bh-drift-b { to { transform: translate3d(-16vmax, -10vmax, 0) scale(1.1); } }
+@keyframes bh-drift-c { to { transform: translate3d(-14vmax, 10vmax, 0) scale(.9); } }
+@keyframes bh-rise  { to { opacity: 1; transform: translate3d(0,0,0) scale(1); } }
+@keyframes bh-float { 0%,100% { transform: translate3d(0,0,0); } 50% { transform: translate3d(0,-1.5%,0); } }
+@keyframes bh-fade  { from { opacity: 0; transform: translate3d(0,8px,0); } to { opacity: 1; transform: none; } }
+@keyframes bh-sweep { 0% { transform: translate3d(0,0,0); } 70%,100% { transform: translate3d(480%,0,0); } }
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 640px) {
+  .bh { --tile: 88px; }
+  .bh-nav { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .bh-tagline { text-align: left; font-size: 10px; }
+  .bh-title { --fs: min(15vw, 14svh, 96px); line-height: 1.02; }
+  .bh-sweep { display: none; }
+  .bh-orb--c { display: none; }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  .bh-title { --fs: min(9vw, 20svh); }
+  .bh-center { padding: 8px 0; }
+}
+
+@media (hover: none) {
+  .bh-btn:hover { transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bh-sweep, .bh-line, .bh-nav, .bh-foot, .bh-orb, .bh-beam, .bh-dot, .bh-spot, .bh-halo { animation: none; }
+  .bh-beam { display: none; }
+  .bh-dot { opacity: .6; }
+  .bh-letter { animation: none; opacity: 1; transform: none; }
+}

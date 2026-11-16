@@ -1,0 +1,149 @@
+/* ==========================================================================
+   SLIDE COMMIT BUTTON (Exact Design Match with reactbits.dev micro-interaction)
+   ========================================================================== */
+
+.slide-commit-track {
+  pointer-events: auto;
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 46px;
+  min-width: 200px;
+  max-width: 260px;
+  padding: 0 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.38));
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: #ffffff;
+  font: 800 11px/1 var(--font-sans, -apple-system, sans-serif);
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  cursor: default;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.slide-commit-track:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 3px;
+}
+
+.slide-commit-fill,
+.slide-commit-label {
+  pointer-events: none;
+}
+
+.slide-commit-track:hover {
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+}
+
+.slide-commit-track.is-committed {
+  cursor: default;
+  border-color: #ffffff;
+  animation: slide-commit-pulse 0.4s ease forwards;
+}
+
+.slide-commit-track {
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.slide-commit-track.is-disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Optional Frost variant for Winter scene */
+.slide-commit-track--frost {
+  background: linear-gradient(90deg, rgba(220, 235, 255, 0.2), rgba(255, 255, 255, 0.45));
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.slide-commit-track--frost .slide-commit-orb {
+  background: #1a0f0a;
+  color: #ffffff;
+}
+
+/* Subtle progress trail */
+.slide-commit-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.28));
+  border-radius: 999px;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+/* Draggable Orb matching original design */
+.slide-commit-orb {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #1a0f0a;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  font-weight: 900;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  touch-action: none;
+  cursor: grab;
+  will-change: transform;
+}
+
+.slide-commit-orb:active {
+  cursor: grabbing;
+}
+
+.slide-commit-arrow {
+  display: block;
+  transform: translateX(1px);
+  transition: transform 0.2s ease;
+}
+
+.slide-commit-track:hover .slide-commit-arrow {
+  transform: translateX(3px);
+}
+
+.slide-commit-check {
+  color: #ffffff;
+  animation: slide-check-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+/* Label inside track */
+.slide-commit-label {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+  padding-left: 10px;
+  color: #ffffff;
+  pointer-events: none;
+  letter-spacing: 0.12em;
+  will-change: opacity, transform;
+}
+
+@keyframes slide-commit-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slide-check-pop {
+  0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}

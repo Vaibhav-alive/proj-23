@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Montserrat:wght@400;500;600&display=swap');
+
+:root{
+  /* kept: used by the video modal / other files */
+  --bg:#1d1217; --panel:#2a1a21; --cream:#f3e9d8; --paper:#f1e4cf;
+  --pink:#f2a3ad; --pink-deep:#e98a98; --pink-soft:#f6c9c9; --ink:#3a2a2a;
+  --muted:#b9a79d;
+  --serif:'Lora',Georgia,serif; --sans:'Inter',system-ui,sans-serif;
+
+  /* new stationery palette */
+  --m-bg:#faf5ee;
+  --m-plum:#5a3640;
+  --m-rose:#9b4a68;
+  --m-rose-soft:#b0506f;
+  --m-muted:#8a767b;
+  --m-line:#e6d9d2;
+  --m-paper:#fffbf2;
+  --m-head:'Montserrat','Inter',system-ui,sans-serif;
+}
+
+.page,.page *{box-sizing:border-box}
+.page{background:var(--m-bg);color:var(--m-plum);font-family:var(--sans);min-height:100vh}
+
+/* =========================================================
+   FRAME — fills the whole screen. Everything inside is sized
+   in --u, which tracks the smaller of the width / height, so
+   the layout scales like the design at any screen size.
+   ========================================================= */
+.frame{
+  --u:min(1vw,1.54vh);
+  position:relative;
+  width:100%;
+  height:100vh;
+  height:100dvh;
+  min-height:480px;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:radial-gradient(90% 80% at 15% 0%,#fdf9f3 0%,var(--m-bg) 60%,#f7efe6 100%);
+  border:1px solid transparent;
+  color:var(--m-plum);
+}
+.frame::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(420px circle at var(--px,70%) var(--py,20%),rgba(240,170,190,.16),transparent 60%)}
+.frame::after{content:"";position:absolute;width:42%;aspect-ratio:1;left:-12%;bottom:-30%;pointer-events:none;border-radius:50%;
+  background:radial-gradient(circle,rgba(246,200,210,.28),transparent 65%);animation:drift 16s ease-in-out infinite alternate}
+
+.micro{font-size:max(9px,calc(var(--u)*.85));letter-spacing:.1em;text-transform:uppercase;color:var(--m-rose-soft);font-weight:500}
+
+/* The design canvas (1036 x 672). Keeps the exact design proportions and is
+   centred on the full-screen cream background, so nothing ever stretches. */
+.m-stage{
+  position:relative;
+  width:calc(var(--u)*100);
+  height:calc(var(--u)*64.86);
+  z-index:1;
+}
+
+/* top bar */
+.topbar{position:absolute;left:4.6%;right:4.4%;top:5.4%;display:flex;justify-content:space-between;align-items:center;z-index:2}
+.topbar .micro:last-child{color:var(--m-plum);letter-spacing:.06em}
+
+/* headline */
+.m-title{position:absolute;left:6.4%;top:14%;line-height:1;font-weight:400;z-index:2}
+.m-main{display:block;font-family:var(--m-head);font-weight:500;font-size:calc(var(--u)*5.3);letter-spacing:-.01em;line-height:1.1;color:var(--m-plum)}
+.m-script{display:block;font-family:var(--serif);font-style:italic;font-weight:400;font-size:calc(var(--u)*7);line-height:1.1;color:var(--m-rose);margin-left:calc(var(--u)*5.8);margin-top:calc(var(--u)*.3)}
+
+.m-desc{position:absolute;left:6.5%;top:40%;font-size:max(12px,calc(var(--u)*1.25));color:var(--m-muted);z-index:2}
+
+.m-dummy{position:absolute;left:44%;top:34.5%;transform:translateX(-50%);text-align:center;white-space:nowrap;z-index:2}
+.m-dummy-t{display:block;font-family:var(--serif);font-weight:500;font-size:max(14px,calc(var(--u)*1.75));color:var(--m-plum)}
+.m-dummy-s{display:block;margin-top:3px;font-family:var(--serif);font-style:italic;font-size:max(10px,calc(var(--u)*.9));color:var(--m-muted)}
+
+.m-spark{position:absolute;color:#e3c58b;font-size:calc(var(--u)*1.4);animation:twinkle 3.4s ease-in-out infinite;pointer-events:none;z-index:2}
+
+/* =========================================================
+   STICKY NOTES
+   ========================================================= */
+.m-sticky{
+  position:absolute;
+  display:flex;flex-direction:column;align-items:flex-start;
+  border:0;border-radius:2px;
+  padding:calc(var(--u)*2.5) calc(var(--u)*2.3) calc(var(--u)*1.5);
+  font:inherit;text-align:left;color:var(--m-plum);cursor:default;
+  box-shadow:0 calc(var(--u)*1) calc(var(--u)*2.4) rgba(122,84,92,.16);
+  transform:rotate(var(--r,0deg));
+  transition:transform .45s cubic-bezier(.2,.7,.2,1),box-shadow .4s;
+  z-index:3;
+}
+.m-sticky::before{ /* washi tape */
+  content:"";position:absolute;top:calc(var(--u)*-.9);left:43%;width:24%;height:calc(var(--u)*1.7);
+  background:var(--tape);opacity:.9;transform:rotate(-1.5deg);
+}
+.m-sticky:hover{
+  transform:rotate(var(--r,0deg)) translateY(-4px);
+  box-shadow:0 calc(var(--u)*1.6) calc(var(--u)*3) rgba(122,84,92,.22);
+  z-index:5;
+}
+
+.m-sticky .num{font-size:max(9px,calc(var(--u)*.85));letter-spacing:.06em;color:#9a8088}
+.m-sticky .heart{position:absolute;top:calc(var(--u)*1.6);right:calc(var(--u)*2);display:inline-block;font-size:calc(var(--u)*1.5);color:#b0607f;animation:beat 3.2s ease-in-out infinite}
+.m-sticky .sh{margin-top:calc(var(--u)*1.1);font-family:var(--serif);font-weight:400;font-size:max(15px,calc(var(--u)*2.1));line-height:1.15;color:#4d3438}
+.m-sticky .sdesc{margin-top:calc(var(--u)*1.1);font-size:max(11px,calc(var(--u)*1.05));color:#6a5559}
+.m-n1{left:4.5%;top:46.5%;width:22.5%;height:18%;--r:-3.5deg;background:#f8e0e6;--tape:#ecc8d2}
+.m-n2{left:33%;top:46%;width:24%;height:18%;--r:2.5deg;background:#e3eef3;--tape:#c3dbe4}
+.m-n3{left:9%;top:72%;width:23.5%;height:18%;--r:1.5deg;background:#f9eed0;--tape:#e8d8ab}
+.m-n4{left:38.5%;top:71%;width:23.5%;height:18%;--r:-3deg;background:#ede6f4;--tape:#d3c6e3}
+
+/* =========================================================
+   BIG NOTE (right)
+   ========================================================= */
+.m-note{
+  position:absolute;left:67%;top:17.5%;width:27%;height:59%;
+  transform:rotate(2.4deg);z-index:3;
+}
+.m-note::before{ /* pink sheet peeking from behind */
+  content:"";position:absolute;
+  inset:calc(var(--u)*.2) calc(var(--u)*-2) calc(var(--u)*-.8) calc(var(--u)*4.5);
+  background:#f9dde5;transform:rotate(1.8deg);
+  box-shadow:0 calc(var(--u)*.8) calc(var(--u)*2) rgba(122,84,92,.1);
+}
+.m-paper{
+  position:relative;height:100%;
+  display:flex;flex-direction:column;
+  padding:calc(var(--u)*2.9) calc(var(--u)*2.6) calc(var(--u)*5.5);
+  background:var(--m-paper);color:#4d3438;
+  box-shadow:0 calc(var(--u)*1.2) calc(var(--u)*3) rgba(122,84,92,.2);
+}
+.m-paper::before{ /* tape */
+  content:"";position:absolute;top:calc(var(--u)*-1.5);left:41%;width:26%;height:calc(var(--u)*2.8);
+  background:#e9ced5;opacity:.92;transform:rotate(-1deg);
+}
+.m-note-micro{font-size:max(8px,calc(var(--u)*.75));color:#8c6a76;letter-spacing:.08em}
+.m-paper h2{margin-top:calc(var(--u)*1.6);font-family:var(--serif);font-style:italic;font-weight:400;font-size:max(18px,calc(var(--u)*2.3));color:var(--m-rose)}
+.m-paper p{margin-top:calc(var(--u)*1.4);font-size:max(12px,calc(var(--u)*1.15));line-height:1.55;color:#6a5a5e}
+.m-closing{position:absolute;left:calc(var(--u)*2.6);bottom:calc(var(--u)*2.2);font-family:var(--serif);font-style:italic;font-size:max(15px,calc(var(--u)*2));color:var(--m-rose)}
+
+/* sticker characters (positioned as % of their parent note) */
+.m-char{position:absolute;display:block;height:auto;object-fit:contain;pointer-events:none;z-index:4;
+  filter:drop-shadow(0 calc(var(--u)*.4) calc(var(--u)*.6) rgba(90,50,60,.18))}
+.m-char-cinna{left:71%;top:-22%;width:26%;animation:bob 5s ease-in-out infinite}
+.m-char-kitty{left:93%;top:-155%;width:95%;animation:bob 6s ease-in-out infinite}
+.m-char-melody{left:12%;top:35%;width:90%;animation:bob 5.5s ease-in-out infinite}
+
+.m-made{position:absolute;left:75%;top:89.8%;font-family:var(--serif);font-style:italic;font-size:max(10px,calc(var(--u)*.9));color:var(--m-rose);z-index:2}
+
+/* footer */
+.m-footer{
+  position:absolute;left:6%;right:4.4%;top:93.3%;bottom:0;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--m-line);z-index:2;
+}
+.m-footer-desc{font-size:max(9px,calc(var(--u)*.8));letter-spacing:.04em;color:var(--m-muted)}
+.m-footer-note{font-family:var(--serif);font-style:italic;font-size:max(14px,calc(var(--u)*1.9));color:var(--m-rose)}
+
+/* =========================================================
+   MOBILE / PORTRAIT — stack everything, still full width
+   ========================================================= */
+@media (max-width:860px),(max-aspect-ratio:1/1){
+  .frame{
+    --u:1.9vw;
+    height:auto;min-height:100vh;
+    display:flex;flex-direction:column;
+    padding:22px 20px 130px;
+  }
+  .m-stage{display:contents}
+  .topbar,.m-title,.m-desc,.m-dummy,.m-sticky,.m-note,.m-made,.m-footer{position:relative;inset:auto}
+
+  .topbar{margin-bottom:calc(var(--u)*4);gap:8px;flex-wrap:wrap}
+  .m-title{margin-bottom:0}
+  .m-main{font-size:max(34px,calc(var(--u)*5.3))}
+  .m-script{font-size:max(44px,calc(var(--u)*7))}
+  .m-desc{margin-top:calc(var(--u)*2)}
+  .m-dummy{transform:none;text-align:left;white-space:normal;margin:calc(var(--u)*5) 0 calc(var(--u)*5)}
+  .m-spark{display:none}
+
+  .m-sticky{width:86%;height:auto;min-height:calc(var(--u)*18);margin-bottom:calc(var(--u)*7);padding:calc(var(--u)*3) calc(var(--u)*3) calc(var(--u)*2)}
+  .m-n1,.m-n3{align-self:flex-start}
+  .m-n2,.m-n4{align-self:flex-end}
+  .m-sticky .num{font-size:10px}
+  .m-sticky{padding-bottom:calc(var(--u)*4.5)}
+
+  .m-note{width:94%;height:auto;align-self:center;margin:calc(var(--u)*5) 0 calc(var(--u)*8)}
+  .m-paper{height:auto;padding:calc(var(--u)*4) calc(var(--u)*3.4) calc(var(--u)*9)}
+  .m-closing{left:calc(var(--u)*3.4);bottom:calc(var(--u)*3.2)}
+  .m-char-kitty{left:93%;top:-230%;width:95%}
+  .m-char-melody{left:12%;top:10%;width:90%}
+
+  .m-made{align-self:flex-end;margin-bottom:calc(var(--u)*1)}
+  .m-footer{padding:12px 0;flex-wrap:wrap;gap:8px}
+}
+
+/* =========================================================
+   VIDEO MODAL (unchanged)
+   ========================================================= */
+.video-modal-backdrop{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;padding:24px;background:rgba(10,6,9,.78);backdrop-filter:blur(8px);animation:video-backdrop-in .25s ease both}
+.video-modal{position:relative;width:min(900px,100%);padding:12px;border:1px solid rgba(242,163,173,.38);border-radius:16px;background:#1d1217;box-shadow:0 24px 80px rgba(0,0,0,.55);animation:video-card-in .35s cubic-bezier(.2,.7,.2,1) both}
+.video-modal-media{display:block;width:100%;max-height:75vh;aspect-ratio:16/9;object-fit:contain;background:#090709;border-radius:10px}
+.video-modal-title{padding:12px 4px 2px;color:var(--cream);font:400 18px var(--serif)}
+.video-modal-close{position:absolute;top:-13px;right:-13px;z-index:1;display:grid;place-items:center;width:36px;height:36px;border:1px solid rgba(255,255,255,.35);border-radius:50%;background:#34212a;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+.video-modal-close:focus-visible{outline:2px solid var(--pink);outline-offset:3px}
+@keyframes video-backdrop-in{from{opacity:0}to{opacity:1}}
+@keyframes video-card-in{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* ---------- MOTION ---------- */
+@keyframes rise{from{opacity:0;translate:0 18px;filter:blur(6px)}to{opacity:1;translate:0 0;filter:blur(0)}}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -6px}}
+@keyframes bob{0%,100%{translate:0 0;rotate:-2deg}50%{translate:0 -5px;rotate:3deg}}
+@keyframes beat{0%,100%{scale:1}12%{scale:1.25}24%{scale:1}36%{scale:1.15}48%{scale:1}}
+@keyframes twinkle{0%,100%{opacity:.45;scale:1}50%{opacity:1;scale:1.3}}
+@keyframes drift{to{translate:90px -60px;scale:1.2}}
+
+.js .reveal{opacity:0}
+.reveal.in{animation:rise 1s var(--d,0s) cubic-bezier(.2,.7,.2,1) both}
+.reveal.in.float{animation:rise 1s var(--d,0s) cubic-bezier(.2,.7,.2,1) both,float 7s calc(var(--d,0s) + 1s) ease-in-out infinite}
+.reveal.in.float.slow{animation-duration:1s,9s}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .js .reveal{opacity:1}
+  .video-modal-backdrop,.video-modal{animation:none}
+}
+
+/* ---------- SWARM BUILD (middle page) ---------- */
+/* While building, the page itself is transparent so the swarm's black backdrop
+   shows; the real frame/cards are hidden by the swarm and built piece by piece. */
+.swarm-building .page { background: transparent; }
+/* freeze reveal animations so the swarm measures the final layout */
+.swarm-building .reveal {
+  opacity: 1 !important;
+  animation: none !important;
+  translate: none !important;
+  filter: none !important;
+}
+
+/* after the swarm: fade the page background in, don't replay the "rise" intro */
+.swarm-done .page { transition: background-color .9s ease; }
+.swarm-done .reveal { opacity: 1; animation: none; translate: none; filter: none; }
+.swarm-done .reveal.float { animation: float 7s ease-in-out infinite; }
+.swarm-done .reveal.float.slow { animation-duration: 9s; }
+
+/* Continue button: floats over the bottom of the page (no dark strip) and is a
+   chunky pastel candy-style pill so it's easy to spot. */
+.app-container .middle-page-container .middle-scroll-prompt{
+  position:sticky;bottom:0;left:0;right:0;
+  height:0;margin:0;padding:0;
+  display:flex;justify-content:center;
+  background:none;border:0;
+  z-index:30;overflow:visible;pointer-events:none;
+}
+.app-container .middle-page-container .middle-continue-button{
+  position:absolute;
+  bottom:max(18px,env(safe-area-inset-bottom));
+  pointer-events:auto;
+  display:inline-flex;align-items:center;gap:10px;
+  padding:14px 34px 14px 28px;
+  border:2.5px solid #fff;border-radius:999px;
+  background:linear-gradient(135deg,#ffd3df 0%,#f8b4c9 52%,#e2b8ef 100%);
+  color:#6b2c45;
+  font:700 13px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+  box-shadow:0 5px 0 #e79ab3,0 14px 28px rgba(176,80,111,.32),inset 0 2px 0 rgba(255,255,255,.7);
+  cursor:pointer;
+  transition:transform .2s cubic-bezier(.2,.7,.2,1),box-shadow .2s,filter .2s;
+}
+.app-container .middle-page-container .middle-continue-button::before{
+  content:"♡";font-size:16px;color:#d9617f;letter-spacing:0;
+  animation:beat 2.6s ease-in-out infinite;
+}
+.app-container .middle-page-container .middle-continue-button::after{
+  content:"✦";position:absolute;top:-9px;right:14px;font-size:15px;color:#f2c46d;
+  text-shadow:0 0 6px rgba(255,255,255,.9);
+  animation:twinkle 2.8s ease-in-out infinite;
+}
+.app-container .middle-page-container .middle-continue-button span{
+  display:inline-block;font-size:16px;transition:transform .25s;
+}
+.app-container .middle-page-container .middle-continue-button:hover:not(:disabled){
+  transform:translateY(-3px);filter:brightness(1.04);
+  box-shadow:0 8px 0 #e79ab3,0 18px 32px rgba(176,80,111,.36),inset 0 2px 0 rgba(255,255,255,.7);
+}
+.app-container .middle-page-container .middle-continue-button:hover:not(:disabled) span{transform:translateX(4px)}
+.app-container .middle-page-container .middle-continue-button:active:not(:disabled){
+  transform:translateY(3px);
+  box-shadow:0 2px 0 #e79ab3,0 8px 16px rgba(176,80,111,.28),inset 0 2px 0 rgba(255,255,255,.7);
+}
+.app-container .middle-page-container .middle-continue-button:focus-visible{outline:3px solid #b0506f;outline-offset:4px}
+.app-container .middle-page-container .middle-continue-button:disabled{opacity:.6;cursor:default}
