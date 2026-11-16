@@ -1,5 +1,5 @@
-export const TOTAL_FRAMES = 179;
-export const INITIAL_PRELOAD_END = 179;
+export const TOTAL_FRAMES = 198;
+export const INITIAL_PRELOAD_END = TOTAL_FRAMES;
 
 export function getFrameUrl(frameIndex) {
   const index = Math.min(Math.max(1, Math.round(frameIndex)), TOTAL_FRAMES);
