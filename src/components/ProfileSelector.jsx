@@ -25,7 +25,7 @@ const PROFILES = [
     codeLabel: 'NM-3',
     name: 'dummy-desc',
     subtitle: 'dummy-desc',
-    image: dummyImage,
+    image: '',
   },
   {
     id: 'pfp-4',
